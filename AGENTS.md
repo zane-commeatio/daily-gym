@@ -12,14 +12,14 @@ The app is in early development (Phase 0 MVP). There is no backend, database, or
 
 | Task | Command |
 |------|---------|
-| Install deps | `yarn install` |
-| Dev server | `yarn dev` (runs on port 3000 by default) |
-| Build | `yarn build` |
-| Lint | `yarn lint` |
+| Install deps | `npm install` |
+| Dev server | `npm run dev` (runs on port 3000 by default) |
+| Build | `npm run build` |
+| Lint | `npm run lint` |
 
 ### Architecture notes
 
-- **Package manager:** yarn (v1 classic). Do not use npm or pnpm.
+- **Package manager:** npm. Do not use yarn or pnpm.
 - **Framework:** Next.js 16 with App Router (`src/app/`).
 - **Styling:** Tailwind CSS v4 via `@tailwindcss/postcss`.
 - **Client state:** TanStack Query is installed for future use.

@@ -5,8 +5,8 @@ Workout **decision support**: log what you did, get a simple recommendation for 
 ## Run locally
 
 ```bash
-yarn install
-yarn dev
+npm install
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The app uses **local storage** only (no account) for the free tier.
@@ -15,10 +15,10 @@ Open [http://localhost:3000](http://localhost:3000). The app uses **local storag
 
 | Command   | Description        |
 | --------- | ------------------ |
-| `yarn dev`   | Next.js dev server |
-| `yarn build` | Production build   |
-| `yarn test`  | Vitest unit tests  |
-| `yarn lint`  | ESLint             |
+| `npm run dev`   | Next.js dev server |
+| `npm run build` | Production build   |
+| `npm test`      | Vitest unit tests  |
+| `npm run lint`  | ESLint             |
 
 ## Product rules
 

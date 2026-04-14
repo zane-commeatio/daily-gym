@@ -186,7 +186,7 @@ Optional: show **today’s fatigue** selector on this screen **before** recommen
 
 ### Phase A — Project skeleton
 
-1. **Scaffold** the web app (e.g. Vite + React + TypeScript) in-repo if not present; align with existing tooling (`yarn`).
+1. **Scaffold** the web app (e.g. Vite + React + TypeScript) in-repo if not present; align with existing tooling (`npm`).
 2. **Add** path alias and strict TypeScript for `Session` / `SessionType`.
 3. **Define** the data model and `classify()` exactly as in §5.
 
