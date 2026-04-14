@@ -1,34 +1,31 @@
-# Phase 1 — Beta & quality
+# Phase 1 — Beta & quality (PWA + Discord)
 
-**Outcome:** The MVP is stable and understandable for **early users** on the browsers/devices you care about, with a lightweight way to collect issues and iterate.
+**Outcome:** The MVP is stable for a **full public** launch path: **installable PWA**, solid tests, clear errors, and a **Discord** feedback entry point ([`DECISIONS.md`](DECISIONS.md)).
 
-This phase is **not** fully defined in the PRD; scope depends on answers in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+## 1.1 Testing
 
-## 1.1 Testing depth
+- Integration tests for storage, navigation, **confirm overwrite** flow, **14-day prune**, timezone/date boundaries.
+- Optional: Playwright (or similar) E2E on one desktop + one mobile viewport.
 
-- Expand unit/integration coverage as needed (e.g. storage migrations, navigation, date edge cases around midnight/time zones).
-- Optional: E2E against a single browser (tooling TBD in OPEN_QUESTIONS).
+## 1.2 PWA
 
-## 1.2 UX and content
+- Web app manifest, icons, **install** affordance; service worker strategy (offline shell vs network-only — pick minimal safe default).
+- Document iOS/Android install quirks in README.
 
-- Refine copy, empty states, and error messages (offline storage failures, quota exceeded).
-- Confirm history sort order and labeling for tennis variants (PRD §7) match user testing.
+## 1.3 UX and content
 
-## 1.3 Performance and resilience
+- Empty state (user choice), storage quota errors, offline behavior.
+- In-app link to **Discord** (invite URL) for support and feedback.
 
-- Validate cold start and storage size for long-term use (7-day window is small; still verify).
-- Decide behavior when `localStorage` / IndexedDB is unavailable or full.
+## 1.4 Performance
 
-## 1.4 Beta channel
-
-- Distribution mechanism: private URL, TestFlight (if native wrapper), PWA install link, etc. — **OPEN_QUESTIONS**.
-- Feedback: in-app link, email, or issue tracker — **OPEN_QUESTIONS**.
+- Lighthouse sanity on Today/Log/History; avoid blocking the rules engine on main thread for large local lists (still small at 14 days).
 
 ## Exit criteria
 
-- No known **P0** bugs on supported environments.
-- Success criteria in PRD §11 validated informally (e.g. short user tests: “understand today’s recommendation in ~5 seconds”).
+- No known **P0** bugs on target browsers.
+- PRD §11 “under ~5 seconds to understand today” validated with a few quick sessions.
 
 ## Handoff to Phase 2
 
-- Document what “free vs Pro” might mean before building Pro (see Phase 2).
+- Backend schema sketch, NextAuth providers, and Stripe/Paddle choice for Pro.

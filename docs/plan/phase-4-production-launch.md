@@ -1,36 +1,40 @@
-# Phase 4 — Production launch
+# Phase 4 — Production launch (Coolify VPS, full public)
 
-**Outcome:** **Pro is live** for real customers: deployed, observable, recoverable, and repeatable (CI/CD).
+**Outcome:** App and database run on your **VPS under Coolify**, **full public** launch ([`DECISIONS.md`](DECISIONS.md)), with monitoring, backups, and Discord support ready.
 
-## 4.1 Hosting & environments
+## 4.1 Infrastructure (Coolify)
 
-- Production + staging (minimum); secrets management; domain and TLS.
-- CDN / edge config if applicable; caching rules for SPA.
+- **Production** + **staging** environments on VPS (separate DB or schema).
+- Coolify: app service, **Postgres** (or chosen DB), persistent volumes, health checks, auto-restart.
+- TLS via Coolify / reverse proxy; custom domain.
+- **Secrets:** API keys (auth, payments, analytics), `NEXTAUTH_SECRET`, DB URL, webhook signing secrets.
 
-## 4.2 CI/CD
+## 4.2 App architecture notes (Next.js)
 
-- Lint, typecheck, tests on every merge; optional preview deploys per branch.
-- Release process: versioning, changelog, rollback strategy.
+- **Not** a static-only host: SSR/API routes, NextAuth, webhooks require a **Node** runtime on the VPS.
+- Configure **build pipeline** (GitHub → Coolify) and migrations (**Drizzle**) on deploy.
 
-## 4.3 Observability
+## 4.3 CI/CD
 
-- Error tracking (e.g. front-end errors, API errors if any).
-- Uptime checks; alerting thresholds.
-- Product analytics **only if** approved in OPEN_QUESTIONS (privacy alignment).
+- CI: lint, typecheck, unit tests; optional E2E on main.
+- Deploy hooks: run migrations before traffic switch; documented rollback (revert image + migration strategy).
 
-## 4.4 Security
+## 4.4 Observability
 
-- Dependency updates; SAST/secret scanning as appropriate.
-- If backend exists: auth hardening, rate limits, webhook signature verification.
+- Error tracking (e.g. Sentry) for server and client.
+- Uptime checks against `/health` or equivalent.
+- Privacy-friendly analytics verified in production (no PII in events).
 
-## 4.5 Launch execution
+## 4.5 Security
 
-- Communication plan: who is notified, where (email list, social, etc.).
-- Gradual rollout vs big bang — **OPEN_QUESTIONS**.
-- Post-launch checklist: smoke tests, payment verification, support readiness.
+- Rate limits on auth and webhook routes; secure cookies for production.
+- Dependency updates; backup verification (DB + Coolify volume snapshots if used).
+
+## 4.6 Launch execution
+
+- **Full public** go-live checklist: DNS, payments live mode, smoke tests, Discord announcement.
+- Post-launch: monitor errors and payment webhooks for 24–48h (operational expectation, not a calendar promise).
 
 ## Exit criteria
 
-- Production URL serves the shipped build; Pro purchases work end-to-end.
-- On-call or owner knows how to roll back and where logs live.
-- “Launched Pro” = users can pay (if paid), use Pro features, and get support per published policy.
+- Public URL serves the app; free and Pro flows work; subscriptions renew; Discord is the documented support surface.

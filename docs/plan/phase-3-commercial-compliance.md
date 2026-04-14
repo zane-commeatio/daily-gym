@@ -1,38 +1,37 @@
-# Phase 3 — Commercial & compliance
+# Phase 3 — Commercial & compliance (global subscription)
 
-**Outcome:** You can **legally and safely** charge for Pro in your chosen markets, with privacy disclosures and support expectations aligned with reality.
-
-Scope is **conditional**: if Pro is free, donation-only, or enterprise-contract, this phase shrinks accordingly. Use [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+**Outcome:** **Subscription** checkout works in **all intended markets** ([`DECISIONS.md`](DECISIONS.md)), with Terms, Privacy, refund stance, and **privacy-friendly** analytics disclosed. Support is **Discord-first** ([`DECISIONS.md`](DECISIONS.md)).
 
 ## 3.1 Payments & billing
 
-- Select provider(s) (Stripe, Paddle, App Store / Play Billing, etc.).
-- Implement checkout, subscription lifecycle (trial, renew, cancel, refund hooks).
-- Tax/VAT and invoicing requirements — jurisdiction-dependent.
+- Integrate **Stripe or Paddle** (or equivalent) with **global** tax/VAT support — confirm provider in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
+- Subscription lifecycle: create, renew, cancel, failed payment, webhook idempotency, customer portal link.
+- Define **trial** policy (OPEN_QUESTIONS).
 
-## 3.2 Legal
+## 3.2 Legal & product copy
 
-- Terms of Service, Privacy Policy, cookie/consent banner if you use non-essential cookies or trackers.
-- Refund policy aligned with store rules or local law.
-- If health-adjacent claims are made in marketing, review positioning with counsel (tool is decision support, not medical advice — wording TBD).
+- Terms of Service, Privacy Policy (account, sessions, Health data if collected, subprocessors).
+- Cookie/consent: align with **privacy-friendly** analytics only.
+- Refund/support policy referenced from app and Discord.
 
-## 3.3 Privacy & data
+## 3.3 Privacy-friendly analytics
 
-- Data inventory: what you store (sessions, emails, analytics), where, retention.
-- DPIA / GDPR / CCPA applicability — **region-dependent** (OPEN_QUESTIONS).
-- Subprocessor list if you use analytics, email, or auth vendors.
+- One vendor (e.g. Plausible, PostHog self-hosted, or similar) — **no ad networks**; document events and retention.
 
-## 3.4 Customer support
+## 3.4 Health data (if Apple Health is in scope)
 
-- Support channel and SLA (even if “best effort”).
-- Process for billing and account issues.
+- Apple **privacy nutrition** labels and in-app explanation of what is read/written.
+- If native ships later, plan **App Store** compliance (IAP rules may apply to digital goods — track separately).
+
+## 3.5 Support
+
+- Discord roles/channels for **billing** vs **product**; escalation path (email for invoices — OPEN_QUESTIONS).
 
 ## Exit criteria
 
-- Published policies and in-app links.
-- Payment flows tested in **production-like** mode (provider test clocks / sandbox).
-- A clear answer to “what data leaves the device and why.”
+- Sandbox → production test of full subscribe / cancel / webhook path.
+- Policies published and linked from the app and marketing site.
 
 ## Handoff to Phase 4
 
-- Launch is not only “code on a server”; it includes runbooks and monitoring (Phase 4).
+- Secrets, webhooks, and DB backups ready for Coolify production.
