@@ -28,4 +28,4 @@
 
 ## Handoff to Phase 2
 
-- Backend schema sketch, NextAuth providers, and Stripe/Paddle choice for Pro.
+- Backend schema sketch, NextAuth providers, and **Stripe** integration plan for Pro.

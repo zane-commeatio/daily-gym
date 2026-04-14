@@ -1,29 +1,22 @@
 # Open questions
 
-Most product and stack choices are captured in [`DECISIONS.md`](DECISIONS.md). The items below still need an answer so engineering and compliance do not guess.
+Most decisions are in [`DECISIONS.md`](DECISIONS.md) (including PR review resolutions: unlimited history, CSV in settings, delete account, iOS-only Health, no trial, Stripe, no refunds, Thailand entity, 2-day Discord response, single owner on-call).
 
-## Product & data
+The items below still need a concrete spec so implementation does not guess.
 
-1. **Pro retention:** Unlimited history vs a **fixed max** (e.g. 1 year, 5 years)? Any **user-controlled delete** or export obligations?
-2. **Apple Health (scope):** **Import** workouts only, **export** sessions only, or **both**? Which HealthKit types map to PRD session types (`S`/`A`/`H`/`T`/`R`)?
-3. **Apple Health (platform):** Ship **Health on web** (if any) only after **native app**, or accept **manual CSV** / deferred Health until native?
-4. **Subscription trial:** Length (**7 / 14 / none** days) and whether **card required** up front.
+## Apple Health (iOS native)
 
-## Commercial & tax
+1. **Direction:** **Import** from Health into sessions, **export** workouts to Health, or **both**?
+2. **Mapping:** How each PRD `SessionType` (`S` / `A` / `H` / `T` / `R`) maps to **HealthKit** samples or categories (and what to do with unmapped data).
 
-5. **Payment provider:** **Stripe**, **Paddle**, or other (must support global subscriptions and tax where you sell)?
-6. **Refunds / chargebacks:** Default policy (e.g. 7-day money-back) for Discord/support to reference.
+## Upgrade & sync edge cases
 
-## Legal & privacy
+3. **First Pro login from free:** **Merge this device’s local history** vs **replace server** vs **user picks** — default and conflict rules.
 
-7. **Company jurisdiction** and **primary markets** (for Terms, Privacy, VAT/GST wording — “everywhere” still needs a legal home).
-8. **Marketing copy:** Confirm **no medical or guaranteed fitness claims**; align with counsel if you mention Apple Health prominently.
+## Optional polish (can ship later)
 
-## Operations
-
-9. **Discord:** **Expected response time** (e.g. 24h business days) and whether **billing issues** escalate to email.
-10. **On-call:** Named owner for payments webhooks, DB backups, and Coolify outages.
+4. **Billing receipts:** Stripe **customer portal** + email receipts only, or also a **support email** for invoice questions (Discord remains primary for chat).
 
 ---
 
-When these are answered, update this file and add a short “Resolved” subsection per item or fold answers into `DECISIONS.md`.
+Update this file when answered; fold stable answers into `DECISIONS.md` if they become policy.

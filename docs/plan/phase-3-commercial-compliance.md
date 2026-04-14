@@ -1,37 +1,41 @@
 # Phase 3 — Commercial & compliance (global subscription)
 
-**Outcome:** **Subscription** checkout works in **all intended markets** ([`DECISIONS.md`](DECISIONS.md)), with Terms, Privacy, refund stance, and **privacy-friendly** analytics disclosed. Support is **Discord-first** ([`DECISIONS.md`](DECISIONS.md)).
+**Outcome:** **Stripe** subscriptions work globally ([`DECISIONS.md`](DECISIONS.md)), with Terms, Privacy, and checkout copy aligned: **Thailand** company, **no trial**, **no refunds** (as legally reviewed), **privacy-friendly** analytics, **Discord** support (**2-day** response expectation).
 
 ## 3.1 Payments & billing
 
-- Integrate **Stripe or Paddle** (or equivalent) with **global** tax/VAT support — confirm provider in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
-- Subscription lifecycle: create, renew, cancel, failed payment, webhook idempotency, customer portal link.
-- Define **trial** policy (OPEN_QUESTIONS).
+- **Stripe** — Checkout + Customer Portal; subscription lifecycle (create, renew, cancel, failed payment); **webhook idempotency**; tax settings for jurisdictions sold into.
+- **No free trial** — do not configure trial periods in Stripe for this product unless policy changes.
 
 ## 3.2 Legal & product copy
 
-- Terms of Service, Privacy Policy (account, sessions, Health data if collected, subprocessors).
+- Terms of Service, Privacy Policy: Thailand entity, session data, optional Health data (iOS), subprocessors, **no medical claims** ([`DECISIONS.md`](DECISIONS.md)).
+- **Refund policy:** **No refunds** — clear at purchase and in Terms; validate against consumer rules in target markets with counsel.
 - Cookie/consent: align with **privacy-friendly** analytics only.
-- Refund/support policy referenced from app and Discord.
 
 ## 3.3 Privacy-friendly analytics
 
 - One vendor (e.g. Plausible, PostHog self-hosted, or similar) — **no ad networks**; document events and retention.
 
-## 3.4 Health data (if Apple Health is in scope)
+## 3.4 Health data (iOS)
 
-- Apple **privacy nutrition** labels and in-app explanation of what is read/written.
-- If native ships later, plan **App Store** compliance (IAP rules may apply to digital goods — track separately).
+- App Store **privacy nutrition** labels; in-app explanation of Health read/write scope once OPEN_QUESTIONS are closed.
+- **App Store** IAP rules may apply when native ships — track separately from web Stripe.
 
 ## 3.5 Support
 
-- Discord roles/channels for **billing** vs **product**; escalation path (email for invoices — OPEN_QUESTIONS).
+- **Discord** primary; pin **2-day** response expectation ([`DECISIONS.md`](DECISIONS.md)).
+- Optional: Stripe portal for **billing self-service**; see OPEN_QUESTIONS for invoice escalation.
+
+## 3.6 Operations
+
+- Single owner for webhooks/backups/incidents — document **runbooks** and backup restore drill ([`DECISIONS.md`](DECISIONS.md)).
 
 ## Exit criteria
 
-- Sandbox → production test of full subscribe / cancel / webhook path.
-- Policies published and linked from the app and marketing site.
+- Sandbox → production test: subscribe, renew, cancel, webhook handling; copy matches **no trial** / **no refunds**.
+- Policies published and linked from the app.
 
 ## Handoff to Phase 4
 
-- Secrets, webhooks, and DB backups ready for Coolify production.
+- Secrets, Stripe webhooks, and DB backups ready for Coolify production.

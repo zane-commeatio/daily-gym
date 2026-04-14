@@ -3,7 +3,7 @@
 This folder turns [`WORKOUT_RECOMMENDER_PRD.md`](../WORKOUT_RECOMMENDER_PRD.md) into a **phased roadmap** from an empty repo through **MVP**, **beta quality**, **Pro** (extended retention, Apple Health, account + sync), **commercial/compliance**, and **production launch** on your **VPS (Coolify)**.
 
 **Authoritative choices:** [`DECISIONS.md`](DECISIONS.md)  
-**Still TBD:** [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md)
+**Narrow TBDs:** [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md) (mostly Apple Health mapping + upgrade merge rules)
 
 | Phase | Doc | Goal |
 |-------|-----|------|
