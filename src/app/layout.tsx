@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Daily Gym",
-  description: "Workout decision support from your recent training",
+  title: "Daily Gym — Workout Recommender",
+  description: "A minimal app that tells you what workout to do today based on simple rules and recent history.",
 };
 
 export default function RootLayout({
