@@ -4,8 +4,9 @@
 
 ## 3.1 Payments & billing
 
-- **Stripe** — Checkout + Customer Portal; subscription lifecycle (create, renew, cancel, failed payment); **webhook idempotency**; tax settings for jurisdictions sold into.
+- **Stripe** — Checkout + Customer Portal; subscription lifecycle (create, renew, cancel, failed payment); **webhook idempotency**; tax settings for jurisdictions sold into; **Stripe email receipts** ([`DECISIONS.md`](DECISIONS.md)).
 - **No free trial** — do not configure trial periods in Stripe for this product unless policy changes.
+- **v1 billing support:** simplest path — no separate **billing@** inbox; revisit later if volume warrants ([`DECISIONS.md`](DECISIONS.md)).
 
 ## 3.2 Legal & product copy
 
@@ -19,13 +20,13 @@
 
 ## 3.4 Health data (iOS)
 
-- App Store **privacy nutrition** labels; in-app explanation of Health read/write scope once OPEN_QUESTIONS are closed.
+- App Store **privacy nutrition** labels; in-app copy: **import from Health** into app sessions, **no auto-mapping** to workout types ([`DECISIONS.md`](DECISIONS.md)).
 - **App Store** IAP rules may apply when native ships — track separately from web Stripe.
 
 ## 3.5 Support
 
 - **Discord** primary; pin **2-day** response expectation ([`DECISIONS.md`](DECISIONS.md)).
-- Optional: Stripe portal for **billing self-service**; see OPEN_QUESTIONS for invoice escalation.
+- **Stripe Customer Portal** for self-serve subscription management; invoice questions via Discord unless you add email later ([`DECISIONS.md`](DECISIONS.md)).
 
 ## 3.6 Operations
 

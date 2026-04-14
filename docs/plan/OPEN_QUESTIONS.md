@@ -1,22 +1,13 @@
 # Open questions
 
-Most decisions are in [`DECISIONS.md`](DECISIONS.md) (including PR review resolutions: unlimited history, CSV in settings, delete account, iOS-only Health, no trial, Stripe, no refunds, Thailand entity, 2-day Discord response, single owner on-call).
+**Policy and commercial choices** are in [`DECISIONS.md`](DECISIONS.md). Nothing here blocks Phase 0–1; remaining items are **optional UX/engineering detail** for Apple Health import and can be decided during iOS build.
 
-The items below still need a concrete spec so implementation does not guess.
+## Optional — Apple Health import UX (iOS)
 
-## Apple Health (iOS native)
-
-1. **Direction:** **Import** from Health into sessions, **export** workouts to Health, or **both**?
-2. **Mapping:** How each PRD `SessionType` (`S` / `A` / `H` / `T` / `R`) maps to **HealthKit** samples or categories (and what to do with unmapped data).
-
-## Upgrade & sync edge cases
-
-3. **First Pro login from free:** **Merge this device’s local history** vs **replace server** vs **user picks** — default and conflict rules.
-
-## Optional polish (can ship later)
-
-4. **Billing receipts:** Stripe **customer portal** + email receipts only, or also a **support email** for invoice questions (Discord remains primary for chat).
+1. **Granularity:** Import as **one session per calendar day** (PRD model) vs allow **multiple Health-backed rows** per day with user merge rules.
+2. **Duplicate detection:** When re-importing, match on date + source id vs always create new draft rows for user to confirm.
+3. **Export to Health (future):** Revisit if product later needs **write** to Health; current policy is **import only**.
 
 ---
 
-Update this file when answered; fold stable answers into `DECISIONS.md` if they become policy.
+Add rows here only when a decision is needed; otherwise delete this file’s sections as they close.

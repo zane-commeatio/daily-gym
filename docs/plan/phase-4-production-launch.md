@@ -7,7 +7,7 @@
 - **Production** + **staging** environments on VPS (separate DB or schema).
 - Coolify: app service, **Postgres** (or chosen DB), persistent volumes, health checks, auto-restart.
 - TLS via Coolify / reverse proxy; custom domain.
-- **Secrets:** API keys (auth, payments, analytics), `NEXTAUTH_SECRET`, DB URL, webhook signing secrets.
+- **Secrets:** API keys (auth, **Stripe**, analytics), `NEXTAUTH_SECRET`, DB URL, **Stripe webhook** signing secret.
 
 ## 4.2 App architecture notes (Next.js)
 
