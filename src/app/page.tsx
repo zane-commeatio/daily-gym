@@ -1,6 +1,10 @@
 "use client";
 
+import { format, parse } from "date-fns";
+import { Check } from "lucide-react";
+import { DayButton, type DayButtonProps } from "react-day-picker";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { buildHistory } from "@/lib/history";
 import { recommend } from "@/lib/recommend";
 import {
@@ -16,8 +20,8 @@ import { hasSessionOnDate } from "@/lib/sessions";
 import type { SessionType } from "@/lib/types";
 import { SESSION_TYPES } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -25,15 +29,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
-type View = "today" | "log" | "history";
+function LoggedDayButton({ className, children, modifiers, ...props }: DayButtonProps) {
+  const isLogged = Boolean(modifiers.logged);
+  const isSelected = Boolean(modifiers.selected);
+
+  return (
+    <DayButton
+      className={cn(
+        className,
+        !isSelected &&
+          !isLogged &&
+          "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+        isSelected &&
+          "bg-zinc-900 text-white hover:bg-zinc-900 hover:text-white focus:bg-zinc-900 focus:text-white active:bg-zinc-900 active:text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-100 dark:hover:text-zinc-900 dark:focus:bg-zinc-100 dark:focus:text-zinc-900 dark:active:bg-zinc-100 dark:active:text-zinc-900",
+        isLogged &&
+          !isSelected &&
+          "border border-emerald-200 bg-emerald-50 text-emerald-950 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-100 dark:hover:bg-emerald-950/60",
+      )}
+      modifiers={modifiers}
+      {...props}
+    >
+      {children}
+      {isLogged ? (
+        <Check
+          className={cn(
+            "pointer-events-none absolute right-1 top-1 size-3",
+            isSelected ? "text-white dark:text-zinc-900" : "text-emerald-600 dark:text-emerald-300",
+          )}
+        />
+      ) : null}
+    </DayButton>
+  );
+}
 
 export default function Home() {
   const { sessions, saveSession, isSaving } = useSessions();
-  const [view, setView] = useState<View>("today");
   const [fatigue, setFatigue] = useState<"low" | "medium" | "high" | "unset">(
     "unset",
   );
@@ -69,8 +103,13 @@ export default function Home() {
     const pruned = pruneSessionsForFreeTier(sessions, today);
     return [...pruned].sort((a, b) => (a.date < b.date ? 1 : -1));
   }, [sessions, today]);
+  const loggedDates = useMemo(() => new Set(sessions.map((session) => session.date)), [sessions]);
 
   const needsIntensity = logType === "S" || logType === "T";
+  const selectedLogDate = useMemo(
+    () => parse(logDate, "yyyy-MM-dd", new Date()),
+    [logDate],
+  );
 
   const handleLogSubmit = async () => {
     if (needsIntensity && !logIntensity) {
@@ -92,25 +131,18 @@ export default function Home() {
     setLogDate(getTodayIso());
     setLogType("A");
     setLogIntensity("easy");
-    setView("history");
+    toast.success("Session saved");
   };
 
   return (
     <main className="flex flex-1 flex-col gap-8">
-      <Tabs value={view} onValueChange={(v) => setView(v as View)}>
-        <TabsList>
-          <TabsTrigger value="today">Today</TabsTrigger>
-          <TabsTrigger value="log">Log</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="today">
-          <header>
-            <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Based on your last seven days and how you feel.
-            </p>
-          </header>
+      <section className="flex flex-col gap-6">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            Based on your last seven days and how you feel.
+          </p>
+        </header>
 
           {emptyNoPreference ? (
             <Card>
@@ -198,57 +230,67 @@ export default function Home() {
               </div>
             </>
           )}
-        </TabsContent>
+      </section>
 
-        <TabsContent value="log">
-          <header>
-            <h1 className="text-2xl font-semibold tracking-tight">Log session</h1>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              One entry per calendar day. Logging again asks before replacing.
-            </p>
-          </header>
+      <Separator />
 
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="date">Date</Label>
-              <Input
-                id="date"
-                type="date"
-                value={logDate}
-                onChange={(e) => {
-                  setLogDate(e.target.value);
-                }}
-              />
-            </div>
+      <section className="flex flex-col gap-5">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight">Log session</h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            One entry per calendar day. Logging again asks before replacing.
+          </p>
+        </header>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="type">Type</Label>
-              <Select
-                value={logType}
-                onValueChange={(v) => {
-                  setLogType(v as SessionType);
-                }}
-              >
-                <SelectTrigger id="type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SESSION_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t === "S"
-                        ? "Strength"
-                        : t === "A"
-                          ? "Aerobic (easy)"
-                          : t === "H"
-                            ? "High intensity"
-                            : t === "T"
-                              ? "Tennis"
-                              : "Rest"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <Label>Date</Label>
+            <Calendar
+              mode="single"
+              month={selectedLogDate}
+              selected={selectedLogDate}
+              onSelect={(date) => {
+                if (!date) return;
+                setLogDate(format(date, "yyyy-MM-dd"));
+              }}
+              modifiers={{
+                logged: (date) => loggedDates.has(format(date, "yyyy-MM-dd")),
+              }}
+              components={{
+                DayButton: LoggedDayButton,
+              }}
+              className="w-fit"
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="type">Type</Label>
+            <Select
+              value={logType}
+              onValueChange={(v) => {
+                setLogType(v as SessionType);
+              }}
+            >
+              <SelectTrigger id="type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SESSION_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t === "S"
+                      ? "Strength"
+                      : t === "A"
+                        ? "Aerobic (easy)"
+                        : t === "H"
+                          ? "High intensity"
+                          : t === "T"
+                            ? "Tennis"
+                            : "Rest"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
             {needsIntensity && (
               <div className="flex flex-col gap-2">
@@ -277,18 +319,20 @@ export default function Home() {
                 void handleLogSubmit();
               }}
             >
-              {isSaving ? "Saving…" : "Save"}
+              {isSaving ? "Saving..." : "Save"}
             </Button>
-          </div>
-        </TabsContent>
+        </div>
+      </section>
 
-        <TabsContent value="history">
-          <header>
-            <h1 className="text-2xl font-semibold tracking-tight">History</h1>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Last 14 days on this device, newest first.
-            </p>
-          </header>
+      <Separator />
+
+      <section className="flex flex-col gap-5">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight">History</h1>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            Last 14 days on this device, newest first.
+          </p>
+        </header>
 
           {historyRows.length === 0 ? (
             <p className="text-sm text-zinc-500">No sessions yet.</p>
@@ -319,9 +363,8 @@ export default function Home() {
                 );
               })}
             </ul>
-          )}
-        </TabsContent>
-      </Tabs>
+        )}
+      </section>
     </main>
   );
 }

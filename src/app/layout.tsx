@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
           <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 pb-10 pt-6">
             {children}
           </div>
+          <Toaster richColors />
         </QueryProvider>
       </body>
     </html>
