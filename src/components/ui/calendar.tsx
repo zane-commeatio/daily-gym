@@ -1,17 +1,65 @@
 "use client";
 
 import * as React from "react";
+import { format } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type MonthCaptionProps, useDayPicker } from "react-day-picker";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+function CalendarMonthCaption({ calendarMonth, className, ...props }: MonthCaptionProps) {
+  const {
+    labels: { labelPrevious, labelNext },
+    nextMonth,
+    previousMonth,
+    goToMonth,
+  } = useDayPicker();
+
+  const previousLabel = labelPrevious(previousMonth);
+  const nextLabel = labelNext(nextMonth);
+
+  return (
+    <div className={cn("flex items-center justify-between gap-2 pt-1", className)} {...props}>
+      <button
+        type="button"
+        className={cn(buttonVariants({ variant: "outline", size: "icon" }), "size-8 rounded-lg p-0")}
+        disabled={!previousMonth}
+        aria-label={previousLabel}
+        onClick={() => {
+          if (previousMonth) {
+            goToMonth(previousMonth);
+          }
+        }}
+      >
+        <ChevronLeft className="size-4" />
+      </button>
+      <span aria-live="polite" className="text-sm font-medium text-zinc-950 dark:text-zinc-50">
+        {format(calendarMonth.date, "MMMM yyyy")}
+      </span>
+      <button
+        type="button"
+        className={cn(buttonVariants({ variant: "outline", size: "icon" }), "size-8 rounded-lg p-0")}
+        disabled={!nextMonth}
+        aria-label={nextLabel}
+        onClick={() => {
+          if (nextMonth) {
+            goToMonth(nextMonth);
+          }
+        }}
+      >
+        <ChevronRight className="size-4" />
+      </button>
+    </div>
+  );
+}
+
 function Calendar({ className, classNames, components, showOutsideDays = true, ...props }: CalendarProps) {
   return (
     <DayPicker
+      hideNavigation
       showOutsideDays={showOutsideDays}
       className={cn(
         "rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900",
@@ -20,17 +68,11 @@ function Calendar({ className, classNames, components, showOutsideDays = true, .
       classNames={{
         months: "flex flex-col",
         month: "space-y-4",
-        month_caption: "relative flex items-center justify-center pt-1",
-        caption_label: "text-sm font-medium text-zinc-950 dark:text-zinc-50",
-        nav: "flex items-center gap-1",
-        button_previous: cn(
-          buttonVariants({ variant: "outline", size: "icon" }),
-          "absolute left-1 top-1 size-8 rounded-lg p-0",
-        ),
-        button_next: cn(
-          buttonVariants({ variant: "outline", size: "icon" }),
-          "absolute right-1 top-1 size-8 rounded-lg p-0",
-        ),
+        month_caption: "",
+        caption_label: "",
+        nav: "",
+        button_previous: "",
+        button_next: "",
         month_grid: "w-full border-collapse",
         weekdays: "flex",
         weekday:
@@ -48,6 +90,7 @@ function Calendar({ className, classNames, components, showOutsideDays = true, .
         ...classNames,
       }}
       components={{
+        MonthCaption: CalendarMonthCaption,
         Chevron: ({ className: iconClassName, orientation, ...iconProps }) => {
           const Icon = orientation === "left" ? ChevronLeft : ChevronRight;
 

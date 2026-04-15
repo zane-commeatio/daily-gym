@@ -1,7 +1,7 @@
 "use client";
 
 import { format, parse } from "date-fns";
-import { Check } from "lucide-react";
+import { Bike, Check, Dumbbell, Flame, MoonStar, Trophy } from "lucide-react";
 import { DayButton, type DayButtonProps } from "react-day-picker";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -18,17 +18,14 @@ import { labelForType } from "@/lib/labels";
 import { classify } from "@/lib/classify";
 import { hasSessionOnDate } from "@/lib/sessions";
 import type { SessionType } from "@/lib/types";
-import { SESSION_TYPES } from "@/lib/types";
+import {
+  SessionTypeOptionCardCompact,
+  SessionTypeOptionCardEditorial,
+  SessionTypeOptionCardTile,
+} from "@/components/session-type-option-cards";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -66,6 +63,39 @@ function LoggedDayButton({ className, children, modifiers, ...props }: DayButton
   );
 }
 
+const SESSION_TYPE_OPTIONS = [
+  {
+    type: "S" as const,
+    title: labelForType("S"),
+    info: "Lift or do a focused strength block.",
+    icon: <Dumbbell className="size-5" />,
+  },
+  {
+    type: "A" as const,
+    title: labelForType("A"),
+    info: "Steady, low-stress cardio work.",
+    icon: <Bike className="size-5" />,
+  },
+  {
+    type: "H" as const,
+    title: labelForType("H"),
+    info: "Short, hard intervals or conditioning.",
+    icon: <Flame className="size-5" />,
+  },
+  {
+    type: "T" as const,
+    title: labelForType("T"),
+    info: "Racket time or a tennis-style session.",
+    icon: <Trophy className="size-5" />,
+  },
+  {
+    type: "R" as const,
+    title: labelForType("R"),
+    info: "Recovery day with no training load.",
+    icon: <MoonStar className="size-5" />,
+  },
+];
+
 export default function Home() {
   const { sessions, saveSession, isSaving } = useSessions();
   const [fatigue, setFatigue] = useState<"low" | "medium" | "high" | "unset">(
@@ -79,6 +109,7 @@ export default function Home() {
   const [logIntensity, setLogIntensity] = useState<"easy" | "hard" | "">("easy");
 
   const today = getTodayIso();
+  const todayLabel = format(new Date(), "EEEE, MMM d");
   const history = useMemo(
     () => buildHistory(sessions, today),
     [sessions, today],
@@ -110,6 +141,7 @@ export default function Home() {
     () => parse(logDate, "yyyy-MM-dd", new Date()),
     [logDate],
   );
+  const [visibleMonth, setVisibleMonth] = useState(selectedLogDate);
 
   const handleLogSubmit = async () => {
     if (needsIntensity && !logIntensity) {
@@ -128,17 +160,22 @@ export default function Home() {
       if (!ok) return;
     }
     await saveSession(session);
-    setLogDate(getTodayIso());
+    const nextLogDate = parse(getTodayIso(), "yyyy-MM-dd", new Date());
+    setLogDate(format(nextLogDate, "yyyy-MM-dd"));
+    setVisibleMonth(nextLogDate);
     setLogType("A");
     setLogIntensity("easy");
     toast.success("Session saved");
   };
 
   return (
-    <main className="flex flex-1 flex-col gap-8">
+    <main className="relative left-1/2 flex w-[min(calc(100vw-2rem),42rem)] flex-1 -translate-x-1/2 flex-col gap-8">
       <section className="flex flex-col gap-6">
         <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
+          <div className="flex items-baseline gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">{todayLabel}</span>
+          </div>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Based on your last seven days and how you feel.
           </p>
@@ -245,51 +282,79 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <Label>Date</Label>
-            <Calendar
-              mode="single"
-              month={selectedLogDate}
-              selected={selectedLogDate}
-              onSelect={(date) => {
-                if (!date) return;
-                setLogDate(format(date, "yyyy-MM-dd"));
-              }}
-              modifiers={{
-                logged: (date) => loggedDates.has(format(date, "yyyy-MM-dd")),
-              }}
-              components={{
-                DayButton: LoggedDayButton,
-              }}
-              className="w-fit"
-            />
+            <div className="flex justify-center">
+              <Calendar
+                mode="single"
+                month={visibleMonth}
+                onMonthChange={setVisibleMonth}
+                selected={selectedLogDate}
+                onSelect={(date) => {
+                  if (!date) return;
+                  setLogDate(format(date, "yyyy-MM-dd"));
+                  setVisibleMonth(date);
+                }}
+                modifiers={{
+                  logged: (date) => loggedDates.has(format(date, "yyyy-MM-dd")),
+                }}
+                components={{
+                  DayButton: LoggedDayButton,
+                }}
+                className="w-fit"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="type">Type</Label>
-            <Select
-              value={logType}
-              onValueChange={(v) => {
-                setLogType(v as SessionType);
-              }}
-            >
-              <SelectTrigger id="type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SESSION_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t === "S"
-                      ? "Strength"
-                      : t === "A"
-                        ? "Aerobic (easy)"
-                        : t === "H"
-                          ? "High intensity"
-                          : t === "T"
-                            ? "Tennis"
-                            : "Rest"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Type</Label>
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                  Variant 1
+                </p>
+                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+                  {SESSION_TYPE_OPTIONS.map((option) => (
+                    <SessionTypeOptionCardCompact
+                      key={`compact-${option.type}`}
+                      {...option}
+                      selected={logType === option.type}
+                      onSelect={setLogType}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                  Variant 2
+                </p>
+                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+                  {SESSION_TYPE_OPTIONS.map((option) => (
+                    <SessionTypeOptionCardTile
+                      key={`tile-${option.type}`}
+                      {...option}
+                      selected={logType === option.type}
+                      onSelect={setLogType}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                  Variant 3
+                </p>
+                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+                  {SESSION_TYPE_OPTIONS.map((option) => (
+                    <SessionTypeOptionCardEditorial
+                      key={`editorial-${option.type}`}
+                      {...option}
+                      selected={logType === option.type}
+                      onSelect={setLogType}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
             {needsIntensity && (
