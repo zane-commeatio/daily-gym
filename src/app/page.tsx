@@ -16,16 +16,14 @@ import {
 import { useSessions } from "@/hooks/use-sessions";
 import { labelForType } from "@/lib/labels";
 import { classify } from "@/lib/classify";
+import { calendarDaysBetween } from "@/lib/dates";
 import { hasSessionOnDate } from "@/lib/sessions";
 import type { SessionType } from "@/lib/types";
-import {
-  SessionTypeOptionCardCompact,
-  SessionTypeOptionCardEditorial,
-  SessionTypeOptionCardTile,
-} from "@/components/session-type-option-cards";
+import { SessionTypeOptionCardCompact } from "@/components/session-type-option-cards";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import { WorkoutInfoSheet } from "@/components/workout-info-sheet";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -172,9 +170,12 @@ export default function Home() {
     <main className="relative left-1/2 flex w-[min(calc(100vw-2rem),42rem)] flex-1 -translate-x-1/2 flex-col gap-8">
       <section className="flex flex-col gap-6">
         <header>
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">{todayLabel}</span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-baseline gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">{todayLabel}</span>
+            </div>
+            <WorkoutInfoSheet />
           </div>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Based on your last seven days and how you feel.
@@ -306,54 +307,15 @@ export default function Home() {
 
           <div className="flex flex-col gap-2">
             <Label>Type</Label>
-            <div className="flex flex-col gap-3">
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                  Variant 1
-                </p>
-                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-                  {SESSION_TYPE_OPTIONS.map((option) => (
-                    <SessionTypeOptionCardCompact
-                      key={`compact-${option.type}`}
-                      {...option}
-                      selected={logType === option.type}
-                      onSelect={setLogType}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                  Variant 2
-                </p>
-                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-                  {SESSION_TYPE_OPTIONS.map((option) => (
-                    <SessionTypeOptionCardTile
-                      key={`tile-${option.type}`}
-                      {...option}
-                      selected={logType === option.type}
-                      onSelect={setLogType}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                  Variant 3
-                </p>
-                <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-                  {SESSION_TYPE_OPTIONS.map((option) => (
-                    <SessionTypeOptionCardEditorial
-                      key={`editorial-${option.type}`}
-                      {...option}
-                      selected={logType === option.type}
-                      onSelect={setLogType}
-                    />
-                  ))}
-                </div>
-              </div>
+            <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+              {SESSION_TYPE_OPTIONS.map((option) => (
+                <SessionTypeOptionCardCompact
+                  key={option.type}
+                  {...option}
+                  selected={logType === option.type}
+                  onSelect={setLogType}
+                />
+              ))}
             </div>
           </div>
 
@@ -406,6 +368,17 @@ export default function Home() {
               {historyRows.map((s) => {
                 const tennisEasy = s.type === "T" && classify(s) === "easy";
                 const label = labelForType(s.type, { tennisEasy });
+                const daysAgo = calendarDaysBetween(s.date, today);
+                const formattedDate = format(
+                  parse(s.date, "yyyy-MM-dd", new Date()),
+                  "EEEE, MMM d",
+                );
+                const relativeLabel =
+                  daysAgo === 0
+                    ? "Today"
+                    : daysAgo === 1
+                      ? "1 day ago"
+                      : `${daysAgo} days ago`;
                 const extra =
                   s.type === "S" || s.type === "T"
                     ? s.intensity
@@ -418,7 +391,10 @@ export default function Home() {
                     className="flex flex-col gap-0.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <span className="font-medium text-zinc-950 dark:text-zinc-50">
-                      {s.date}
+                      {formattedDate}
+                      <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                        ({relativeLabel})
+                      </span>
                     </span>
                     <span className="text-sm text-zinc-600 dark:text-zinc-400">
                       {label}
