@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-function CalendarMonthCaption({ calendarMonth, className, ...props }: MonthCaptionProps) {
+function CalendarMonthCaption({ calendarMonth, className }: MonthCaptionProps) {
   const {
     labels: { labelPrevious, labelNext },
     nextMonth,
@@ -22,7 +22,7 @@ function CalendarMonthCaption({ calendarMonth, className, ...props }: MonthCapti
   const nextLabel = labelNext(nextMonth);
 
   return (
-    <div className={cn("flex items-center justify-between gap-2 pt-1", className)} {...props}>
+    <div className={cn("flex items-center justify-between gap-2 pt-1", className)}>
       <button
         type="button"
         className={cn(buttonVariants({ variant: "outline", size: "icon" }), "size-8 rounded-lg p-0")}

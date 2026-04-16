@@ -49,6 +49,7 @@ const rules = [
   "Two high-intensity sessions in the last seven days block another one.",
   "Two hard sessions across the last three days narrow today to aerobic or rest.",
   "If you have not lifted recently, strength gets bumped up in the ranking when it is still allowed.",
+  "If you have not had a hard session recently, high intensity gets bumped up too, unless an earlier rule blocked it.",
 ];
 
 export function WorkoutInfoSheet() {

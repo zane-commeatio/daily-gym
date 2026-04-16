@@ -5,6 +5,7 @@ export const STORAGE_KEY_SESSIONS = "daily-gym-sessions";
 export const STORAGE_KEY_STARTING = "daily-gym-starting-preference";
 
 const RETENTION_DAYS = 14;
+const STARTING_PREFERENCE_EVENT = "daily-gym-starting-preference-change";
 
 export function pruneSessionsForFreeTier(
   sessions: Session[],
@@ -46,4 +47,17 @@ export function loadStartingPreference(): "S" | "A" | null {
 export function saveStartingPreference(pref: "S" | "A"): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY_STARTING, pref);
+  window.dispatchEvent(new Event(STARTING_PREFERENCE_EVENT));
+}
+
+export function subscribeStartingPreference(onChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  window.addEventListener("storage", onChange);
+  window.addEventListener(STARTING_PREFERENCE_EVENT, onChange);
+
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(STARTING_PREFERENCE_EVENT, onChange);
+  };
 }

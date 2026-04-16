@@ -103,7 +103,8 @@ function classify(session: Session): "easy" | "hard" {
 4. **Count `H` in last 7 days ≥ 2** → **block** `H` (still apply after 2–3 unless fatigue or other rules removed all options).
 5. **`hardSessionsLast3` ≥ 2** → allowed: **`A`**, **`R`** only (forces recovery-ish choices).
 6. **No `S` in last 3 days** → **prioritize** `S` (recommendation order: prefer **`S`** as “best”; alternatives may include **`A`** or easy **`T`** if allowed by other rules).
-7. **Default** → allow **`A`** (and other types not blocked by above).
+7. **No hard session in last 3 days** → **prioritize** `H` when still allowed, but keep **`S`** ahead of **`H`** if both ranking rules apply.
+8. **Default** → allow **`A`** (and other types not blocked by above).
 
 **Blocked types** must be excluded from both “best” and “also acceptable” unless the rule explicitly allows a variant (e.g. light `S`).
 

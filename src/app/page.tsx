@@ -1,32 +1,33 @@
 "use client";
 
-import { format, parse } from "date-fns";
-import { Bike, Check, Dumbbell, Flame, MoonStar, Trophy } from "lucide-react";
-import { DayButton, type DayButtonProps } from "react-day-picker";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { buildHistory } from "@/lib/history";
-import { recommend } from "@/lib/recommend";
-import {
-  getTodayIso,
-  loadStartingPreference,
-  saveStartingPreference,
-  pruneSessionsForFreeTier,
-} from "@/lib/storage";
-import { useSessions } from "@/hooks/use-sessions";
-import { labelForType } from "@/lib/labels";
-import { classify } from "@/lib/classify";
-import { calendarDaysBetween } from "@/lib/dates";
-import { hasSessionOnDate } from "@/lib/sessions";
-import type { SessionType } from "@/lib/types";
 import { SessionTypeOptionCardCompact } from "@/components/session-type-option-cards";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import { WorkoutInfoSheet } from "@/components/workout-info-sheet";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { WorkoutInfoSheet } from "@/components/workout-info-sheet";
+import { useSessions } from "@/hooks/use-sessions";
+import { classify } from "@/lib/classify";
+import { calendarDaysBetween } from "@/lib/dates";
+import { buildHistory } from "@/lib/history";
+import { labelForType } from "@/lib/labels";
+import { recommend } from "@/lib/recommend";
+import { hasSessionOnDate } from "@/lib/sessions";
+import {
+  getTodayIso,
+  loadStartingPreference,
+  pruneSessionsForFreeTier,
+  saveStartingPreference,
+  subscribeStartingPreference,
+} from "@/lib/storage";
+import type { SessionType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { format, parse } from "date-fns";
+import { Bike, Check, Dumbbell, Flame, MoonStar, Trophy } from "lucide-react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { DayButton, type DayButtonProps } from "react-day-picker";
+import { toast } from "sonner";
 
 function LoggedDayButton({ className, children, modifiers, ...props }: DayButtonProps) {
   const isLogged = Boolean(modifiers.logged);
@@ -99,8 +100,10 @@ export default function Home() {
   const [fatigue, setFatigue] = useState<"low" | "medium" | "high" | "unset">(
     "unset",
   );
-  const [starting, setStarting] = useState<"S" | "A" | null>(() =>
-    loadStartingPreference(),
+  const starting = useSyncExternalStore(
+    subscribeStartingPreference,
+    loadStartingPreference,
+    () => null,
   );
   const [logDate, setLogDate] = useState(() => getTodayIso());
   const [logType, setLogType] = useState<SessionType>("A");
@@ -193,7 +196,6 @@ export default function Home() {
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                   <Button
                     onClick={() => {
-                      setStarting("S");
                       saveStartingPreference("S");
                     }}
                   >
@@ -202,7 +204,6 @@ export default function Home() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setStarting("A");
                       saveStartingPreference("A");
                     }}
                   >
@@ -307,7 +308,7 @@ export default function Home() {
 
           <div className="flex flex-col gap-2">
             <Label>Type</Label>
-            <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
+            <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
               {SESSION_TYPE_OPTIONS.map((option) => (
                 <SessionTypeOptionCardCompact
                   key={option.type}

@@ -33,11 +33,15 @@ function sortRanked(
   isEmptyHistory: boolean,
 ): SessionType[] {
   const hasS = allowed.includes("S");
+  const hasH = allowed.includes("H");
   const prioritizeS =
     !isEmptyHistory && !strengthInLast3(history) && hasS;
+  const prioritizeH =
+    !isEmptyHistory && hardSessionsLast3(history) === 0 && hasH;
 
   const score = (t: SessionType): number => {
     if (prioritizeS && t === "S") return 100;
+    if (prioritizeH && t === "H") return 90;
     if (isEmptyHistory && startingPreference) {
       if (t === startingPreference) return 90;
     }
@@ -153,7 +157,7 @@ export function recommend(
     allowed.add("R");
   }
 
-  // Rule 6 is ordering only (sortRanked). Rule 7 is implicit in remaining allowed.
+  // Rules 6-7 are ordering only (sortRanked). Rule 8 is implicit in remaining allowed.
 
   const allowedArr = ALL_TYPES.filter((t) => allowed.has(t));
   const ranked = sortRanked(
