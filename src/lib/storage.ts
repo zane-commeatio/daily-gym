@@ -7,6 +7,27 @@ export const STORAGE_KEY_STARTING = "daily-gym-starting-preference";
 const RETENTION_DAYS = 14;
 const STARTING_PREFERENCE_EVENT = "daily-gym-starting-preference-change";
 
+type LegacySession = Session | {
+  date: string;
+  type: "T";
+  intensity?: "easy" | "hard";
+};
+
+function normalizeSession(session: LegacySession): Session {
+  if (session.type !== "T") {
+    return session;
+  }
+
+  return {
+    date: session.date,
+    type: session.intensity === "hard" ? "H" : "A",
+  };
+}
+
+export function normalizeSessions(sessions: unknown[]): Session[] {
+  return sessions.map((session) => normalizeSession(session as LegacySession));
+}
+
 export function pruneSessionsForFreeTier(
   sessions: Session[],
   todayIso: string,
@@ -22,7 +43,7 @@ export function loadSessions(): Session[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed as Session[];
+    return normalizeSessions(parsed);
   } catch {
     return [];
   }

@@ -8,7 +8,7 @@ import {
 import { labelForType } from "./labels";
 import type { FatigueToday, Session, SessionType } from "./types";
 
-const ALL_TYPES: SessionType[] = ["S", "A", "H", "T", "R"];
+const ALL_TYPES: SessionType[] = ["S", "A", "H", "R"];
 
 export type StartingPreference = "S" | "A";
 
@@ -16,15 +16,13 @@ export type RecommendResult = {
   allowed: SessionType[];
   /** When true, only easy/light strength is allowed (PRD §6 rule 3). */
   strengthOnlyEasy: boolean;
-  /** Prefer T-A copy when suggesting tennis (rules 2–3). */
-  suggestTennisEasy: boolean;
   ranked: SessionType[];
   primaryLabel: string;
   alternativeLabels: string[];
 };
 
 /** Default tie-break order when rule 6 does not prioritize strength (PRD §6.7). */
-const DEFAULT_ORDER: SessionType[] = ["A", "T", "S", "H", "R"];
+const DEFAULT_ORDER: SessionType[] = ["A", "S", "H", "R"];
 
 function sortRanked(
   allowed: SessionType[],
@@ -54,7 +52,6 @@ function sortRanked(
 
 function buildLabels(
   ranked: SessionType[],
-  suggestTennisEasy: boolean,
   strengthOnlyEasy: boolean,
 ): { primary: string; alternatives: string[] } {
   const primary = ranked[0];
@@ -62,15 +59,8 @@ function buildLabels(
     return { primary: "Rest", alternatives: [] };
   }
 
-  const primaryLabel = labelForType(primary, {
-    tennisEasy: suggestTennisEasy && primary === "T",
-  });
-
-  const alts = ranked.slice(1, 3).map((t) =>
-    labelForType(t, {
-      tennisEasy: suggestTennisEasy && t === "T",
-    }),
-  );
+  const primaryLabel = labelForType(primary);
+  const alts = ranked.slice(1, 3).map((t) => labelForType(t));
 
   if (strengthOnlyEasy && primary === "S") {
     return {
@@ -101,7 +91,6 @@ export function recommend(
   const isEmptyHistory = options?.isEmptyHistory ?? history.length === 0;
   let allowed = new Set<SessionType>(ALL_TYPES);
   let strengthOnlyEasy = false;
-  let suggestTennisEasy = false;
 
   const yesterday = getYesterdaySession(history, todayIso);
 
@@ -109,11 +98,10 @@ export function recommend(
   if (fatigueToday === "high") {
     allowed = new Set(["A", "R"]);
     const ranked = sortRanked([...allowed], history, undefined, false);
-    const { primary, alternatives } = buildLabels(ranked, false, false);
+    const { primary, alternatives } = buildLabels(ranked, false);
     return {
       allowed: [...allowed],
       strengthOnlyEasy: false,
-      suggestTennisEasy: false,
       ranked,
       primaryLabel: primary,
       alternativeLabels: alternatives,
@@ -124,7 +112,6 @@ export function recommend(
   if (yesterday?.type === "H") {
     allowed.delete("H");
     allowed.delete("S");
-    suggestTennisEasy = true;
   }
 
   // 3. Yesterday was hard S → block H; allow light S only
@@ -137,7 +124,6 @@ export function recommend(
     if (allowed.has("S")) {
       strengthOnlyEasy = true;
     }
-    suggestTennisEasy = true;
   }
 
   // 4. Count H in last 7 ≥ 2 → block H
@@ -168,14 +154,12 @@ export function recommend(
   );
   const { primary, alternatives } = buildLabels(
     ranked,
-    suggestTennisEasy,
     strengthOnlyEasy,
   );
 
   return {
     allowed: allowedArr,
     strengthOnlyEasy,
-    suggestTennisEasy,
     ranked,
     primaryLabel: primary,
     alternativeLabels: alternatives.filter(Boolean),

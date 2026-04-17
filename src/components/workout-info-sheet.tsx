@@ -32,11 +32,6 @@ const workoutTypes = [
     description: "Intervals or conditioning. The app limits this quickly when you already have enough hard work in the week.",
   },
   {
-    code: "T",
-    name: "Tennis",
-    description: "Racket time or a tennis-style session. After a hard day, the app treats tennis as an easier option when needed.",
-  },
-  {
     code: "R",
     name: "Rest",
     description: "A recovery day with no real training load.",
@@ -45,8 +40,8 @@ const workoutTypes = [
 
 const rules = [
   "High fatigue limits today to aerobic or rest.",
-  "After a high-intensity day, the next day cannot be high intensity or strength.",
-  "After hard strength, high intensity is blocked and strength stays light only.",
+  "After a high-intensity day, the next day cannot be high intensity or strength, so easy cardio or rest stay available.",
+  "After hard strength, high intensity is blocked and strength stays light only, with easy cardio or rest still available.",
   "Two high-intensity sessions in the last seven days block another one.",
   "Two hard sessions across the last three days narrow today to aerobic or rest.",
   "If you have not lifted recently, strength gets bumped up in the ranking when it is still allowed.",

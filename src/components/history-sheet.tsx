@@ -2,7 +2,6 @@
 
 import { format, parse } from "date-fns";
 import type { ReactNode } from "react";
-import { classify } from "@/lib/classify";
 import { calendarDaysBetween } from "@/lib/dates";
 import { labelForType } from "@/lib/labels";
 import type { Session } from "@/lib/types";
@@ -48,10 +47,9 @@ export function HistorySheet({
           {historyRows.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">No sessions yet.</p>
           ) : (
-            <ul className="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+              <ul className="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
               {historyRows.map((s) => {
-                const tennisEasy = s.type === "T" && classify(s) === "easy";
-                const label = labelForType(s.type, { tennisEasy });
+                const label = labelForType(s.type);
                 const daysAgo = calendarDaysBetween(s.date, todayIso);
                 const formattedDate = format(
                   parse(s.date, "yyyy-MM-dd", new Date()),
@@ -64,7 +62,7 @@ export function HistorySheet({
                       ? "1 day ago"
                       : `${daysAgo} days ago`;
                 const extra =
-                  s.type === "S" || s.type === "T"
+                  s.type === "S"
                     ? s.intensity
                       ? ` · ${s.intensity}`
                       : ""

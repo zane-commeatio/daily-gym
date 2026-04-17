@@ -6,7 +6,7 @@ Authoritative answers from stakeholder input (2026). Phase docs assume these unl
 |------|----------|
 | **Pro features** | **Unlimited** history on the server; **Apple Health** — **iOS only** (native HealthKit; not web PWA). |
 | **Apple Health — direction** | **Import only** — bring **Apple Health data into sessions** in the app (no export of app sessions **to** Health for this policy baseline). |
-| **Apple Health — typing** | **No automatic mapping** from HealthKit samples to PRD `SessionType` — the user **assigns or confirms** type (e.g. pick `S`/`A`/`H`/`T`/`R` per row or batch); implementation can still **suggest** from raw Health data, but **no silent auto-map**. |
+| **Apple Health — typing** | **No automatic mapping** from HealthKit samples to PRD `SessionType` — the user **assigns or confirms** type (e.g. pick `S`/`A`/`H`/`R` per row or batch); implementation can still **suggest** from raw Health data, but **no silent auto-map**. |
 | **Pro — settings** | **CSV export** available in settings; **delete account** (full erasure flow) in settings. |
 | **Pro — data export** | **JSON export/import** remains **Pro only** (PRD Phase F); **CSV** is an additional export format in settings. |
 | **Free tier** | History capped at **14 days** on device. Rules engine still uses **last 7 days** per PRD §6 unless PRD is updated. |

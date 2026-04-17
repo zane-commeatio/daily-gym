@@ -29,7 +29,7 @@ import {
 import type { SessionType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { format, parse } from "date-fns";
-import { Bike, Check, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar, Trophy } from "lucide-react";
+import { Bike, Check, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar } from "lucide-react";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { DayButton, type DayButtonProps } from "react-day-picker";
 import { toast } from "sonner";
@@ -87,12 +87,6 @@ const SESSION_TYPE_OPTIONS = [
     icon: <Flame className="size-5" />,
   },
   {
-    type: "T" as const,
-    title: labelForType("T"),
-    info: "Racket time or a tennis-style session.",
-    icon: <Trophy className="size-5" />,
-  },
-  {
     type: "R" as const,
     title: labelForType("R"),
     info: "Recovery day with no training load.",
@@ -144,7 +138,7 @@ export default function Home() {
   }, [sessions, today]);
   const loggedDates = useMemo(() => new Set(sessions.map((session) => session.date)), [sessions]);
 
-  const needsIntensity = logType === "S" || logType === "T";
+  const needsIntensity = logType === "S";
   const selectedLogDate = useMemo(
     () => parse(logDate, "yyyy-MM-dd", new Date()),
     [logDate],

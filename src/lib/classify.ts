@@ -4,6 +4,5 @@ import type { Session } from "./types";
 export function classify(session: Session): "easy" | "hard" {
   if (session.type === "H") return "hard";
   if (session.type === "S" && session.intensity === "hard") return "hard";
-  if (session.type === "T" && session.intensity === "hard") return "hard";
   return "easy";
 }

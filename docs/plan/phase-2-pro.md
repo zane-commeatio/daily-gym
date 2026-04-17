@@ -21,7 +21,7 @@
 2. **Cross-device sync** — same account; conflict rules documented (merge upgrade path is defined above).
 3. **Export/import JSON** — Pro only; validate schema and rate limits.
 4. **CSV export** — Pro settings; column contract documented for support.
-5. **Apple Health (iOS native)** — **Import only:** read HealthKit data and create or update **sessions** in the app; **no automatic PRD type mapping** — user assigns `S`/`A`/`H`/`T`/`R` (or confirms suggestions if you add non-binding hints later). Optional UX details in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
+5. **Apple Health (iOS native)** — **Import only:** read HealthKit data and create or update **sessions** in the app; **no automatic PRD type mapping** — user assigns `S`/`A`/`H`/`R` (or confirms suggestions if you add non-binding hints later). Optional UX details in [`OPEN_QUESTIONS.md`](OPEN_QUESTIONS.md).
 
 ## 2.4 QA
 

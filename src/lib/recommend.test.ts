@@ -20,15 +20,16 @@ describe("recommend", () => {
   it("rule 2: yesterday H → block H and S", () => {
     const hist = buildHistory([h("2026-04-13", "H")], today);
     const r = recommend(hist, today, undefined);
+    expect(r.allowed.sort()).toEqual(["A", "R"].sort());
     expect(r.allowed).not.toContain("H");
     expect(r.allowed).not.toContain("S");
-    expect(r.suggestTennisEasy).toBe(true);
   });
 
   it("rule 3: yesterday hard S → block H; light S ok", () => {
     const hist = buildHistory([h("2026-04-13", "S", "hard")], today);
     const r = recommend(hist, today, undefined);
     expect(r.allowed).not.toContain("H");
+    expect(r.allowed).toEqual(["S", "A", "R"]);
     expect(r.strengthOnlyEasy).toBe(true);
   });
 

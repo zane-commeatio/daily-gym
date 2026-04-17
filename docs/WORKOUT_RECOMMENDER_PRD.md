@@ -19,19 +19,7 @@ A minimal web app that tells the user what workout to do **today** based on **si
 | **S** | Strength     |
 | **A** | Aerobic (easy) |
 | **H** | High intensity |
-| **T** | Tennis         |
 | **R** | Rest           |
-
-### 2.1 Tennis tagging
-
-Tennis is stored as type `T` with intensity:
-
-| Tag | Condition              |
-|-----|------------------------|
-| **T-A** | Tennis, easy (`intensity === "easy"`) |
-| **T-H** | Tennis, hard / intense match (`intensity === "hard"`) |
-
-For **rules**, treat **T-H** like other **hard** sessions where “hard” matters; treat **T-A** as **easy** for load/recovery logic unless a rule explicitly names tennis.
 
 ---
 
@@ -39,8 +27,8 @@ For **rules**, treat **T-H** like other **hard** sessions where “hard” matte
 
 | Field | Required | Values | Notes |
 |-------|----------|--------|--------|
-| Session type | Yes | `S` / `A` / `H` / `T` / `R` | |
-| Intensity | When needed | `easy` / `hard` | Drives classification of `S` and `T`; see §5 |
+| Session type | Yes | `S` / `A` / `H` / `R` | |
+| Intensity | When needed | `easy` / `hard` | Drives classification of `S`; see §5 |
 | Fatigue | No | `low` / `medium` / `high` | Used **only** for **today’s recommendation** (not stored as a session field unless you choose to extend the model later) |
 
 ---
@@ -48,7 +36,7 @@ For **rules**, treat **T-H** like other **hard** sessions where “hard” matte
 ## 4. Data model (minimal)
 
 ```ts
-type SessionType = "S" | "A" | "H" | "T" | "R";
+type SessionType = "S" | "A" | "H" | "R";
 
 type Session = {
   date: string; // ISO date, e.g. "2026-04-14" — one session per calendar day for MVP
@@ -70,7 +58,6 @@ type Session = {
 function classify(session: Session): "easy" | "hard" {
   if (session.type === "H") return "hard";
   if (session.type === "S" && session.intensity === "hard") return "hard";
-  if (session.type === "T" && session.intensity === "hard") return "hard";
   return "easy";
 }
 ```
@@ -98,11 +85,11 @@ function classify(session: Session): "easy" | "hard" {
 **Rules (evaluate in order; first match wins unless noted):**
 
 1. **Fatigue high** → allowed: **`A`**, **`R`** only.
-2. **Yesterday was `H`** → **block** `H` and **`S`** → allowed: **`A`**, **`T`** (present as **T-A** in copy when suggesting easy tennis).
-3. **Yesterday was `S` and `classify(yesterday) === "hard"`** → **block** `H` → allowed: **`A`**, **`T`** (T-A), or **light `S`** (`S` with easy intensity).
+2. **Yesterday was `H`** → **block** `H` and **`S`** → allowed: **`A`**, **`R`**.
+3. **Yesterday was `S` and `classify(yesterday) === "hard"`** → **block** `H` → allowed: **`A`**, **`R`**, or **light `S`** (`S` with easy intensity).
 4. **Count `H` in last 7 days ≥ 2** → **block** `H` (still apply after 2–3 unless fatigue or other rules removed all options).
 5. **`hardSessionsLast3` ≥ 2** → allowed: **`A`**, **`R`** only (forces recovery-ish choices).
-6. **No `S` in last 3 days** → **prioritize** `S` (recommendation order: prefer **`S`** as “best”; alternatives may include **`A`** or easy **`T`** if allowed by other rules).
+6. **No `S` in last 3 days** → **prioritize** `S` (recommendation order: prefer **`S`** as “best”; alternatives may include **`A`** or **`R`** if allowed by other rules).
 7. **No hard session in last 3 days** → **prioritize** `H` when still allowed, but keep **`S`** ahead of **`H`** if both ranking rules apply.
 8. **Default** → allow **`A`** (and other types not blocked by above).
 
@@ -122,7 +109,7 @@ function classify(session: Session): "easy" | "hard" {
 Example copy:
 
 - **Best:** Strength  
-- **Also ok:** Easy tennis  
+- **Also ok:** Easy cardio  
 
 Map codes to short labels in one place (constants / i18n-ready object).
 
@@ -140,8 +127,8 @@ Optional: show **today’s fatigue** selector on this screen **before** recommen
 
 ### Screen 2 — Log
 
-- Select **session type** (`S` / `A` / `H` / `T` / `R`).
-- Show **intensity** when `S` or `T` (or always show disabled for others).
+- Select **session type** (`S` / `A` / `H` / `R`).
+- Show **intensity** when `S`.
 - **Submit** → save to persistence → return to Today (or History).
 
 ### Screen 3 — History
@@ -198,7 +185,7 @@ Optional: show **today’s fatigue** selector on this screen **before** recommen
    - `allowed: SessionType[]` (or a structure that distinguishes `S` easy vs hard if needed),
    - `ranked: SessionType[]` for “best” and “also acceptable”.
 6. **Encode** rules §6 **in order** with unit tests: fatigue, yesterday H, yesterday hard S, H count in 7d, 2 hard in 3d, no S in 3d, default.
-7. **Add** label mapping for UI strings (`S` → “Strength”, etc.; `T` + easy → “Easy tennis”).
+7. **Add** label mapping for UI strings (`S` → “Strength”, etc.).
 
 ### Phase C — Persistence + state
 
