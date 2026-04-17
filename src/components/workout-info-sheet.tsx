@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { CircleHelp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,19 +53,33 @@ const rules = [
   "If you have not had a hard session recently, high intensity gets bumped up too, unless an earlier rule blocked it.",
 ];
 
-export function WorkoutInfoSheet() {
+type WorkoutInfoSheetProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: ReactNode;
+};
+
+export function WorkoutInfoSheet({
+  open,
+  onOpenChange,
+  trigger,
+}: WorkoutInfoSheetProps) {
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Open workout rules"
-          className="rounded-full text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-        >
-          <CircleHelp className="size-5" />
-        </Button>
-      </DrawerTrigger>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      {trigger ? (
+        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      ) : open === undefined && onOpenChange === undefined ? (
+        <DrawerTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Open workout rules"
+            className="rounded-full text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            <CircleHelp className="size-5" />
+          </Button>
+        </DrawerTrigger>
+      ) : null}
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Workout types and rules</DrawerTitle>

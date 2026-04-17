@@ -1,30 +1,35 @@
 "use client";
 
+import { HistorySheet } from "@/components/history-sheet";
 import { SessionTypeOptionCardCompact } from "@/components/session-type-option-cards";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { WorkoutInfoSheet } from "@/components/workout-info-sheet";
 import { useSessions } from "@/hooks/use-sessions";
-import { classify } from "@/lib/classify";
-import { calendarDaysBetween } from "@/lib/dates";
 import { buildHistory } from "@/lib/history";
 import { labelForType } from "@/lib/labels";
 import { recommend } from "@/lib/recommend";
 import { hasSessionOnDate } from "@/lib/sessions";
 import {
-  getTodayIso,
-  loadStartingPreference,
-  pruneSessionsForFreeTier,
-  saveStartingPreference,
-  subscribeStartingPreference,
+    getTodayIso,
+    loadStartingPreference,
+    pruneSessionsForFreeTier,
+    saveStartingPreference,
+    subscribeStartingPreference,
 } from "@/lib/storage";
 import type { SessionType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { format, parse } from "date-fns";
-import { Bike, Check, Dumbbell, Flame, MoonStar, Trophy } from "lucide-react";
+import { Bike, Check, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar, Trophy } from "lucide-react";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { DayButton, type DayButtonProps } from "react-day-picker";
 import { toast } from "sonner";
@@ -108,6 +113,8 @@ export default function Home() {
   const [logDate, setLogDate] = useState(() => getTodayIso());
   const [logType, setLogType] = useState<SessionType>("A");
   const [logIntensity, setLogIntensity] = useState<"easy" | "hard" | "">("easy");
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const today = getTodayIso();
   const todayLabel = format(new Date(), "EEEE, MMM d");
@@ -170,15 +177,52 @@ export default function Home() {
   };
 
   return (
-    <main className="relative left-1/2 flex w-[min(calc(100vw-2rem),42rem)] flex-1 -translate-x-1/2 flex-col gap-8">
-      <section className="flex flex-col gap-6">
-        <header>
+    <>
+      <WorkoutInfoSheet open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+      <HistorySheet
+        historyRows={historyRows}
+        todayIso={today}
+        open={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
+      />
+      <main className="relative left-1/2 flex w-[min(calc(100vw-2rem),42rem)] flex-1 -translate-x-1/2 flex-col gap-8">
+        <section className="flex flex-col gap-6">
+          <header>
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-baseline gap-3">
               <h1 className="text-2xl font-semibold tracking-tight">Today</h1>
               <span className="text-sm text-zinc-600 dark:text-zinc-400">{todayLabel}</span>
             </div>
-            <WorkoutInfoSheet />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open menu"
+                  className="rounded-full text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                >
+                  <Menu className="size-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setIsHelpOpen(true);
+                  }}
+                >
+                  <CircleHelp className="size-4" />
+                  Help
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setIsHistoryOpen(true);
+                  }}
+                >
+                  <History className="size-4" />
+                  History
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Based on your last seven days and how you feel.
@@ -217,7 +261,7 @@ export default function Home() {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    Today you should do
+                  Recommended
                   </p>
                   <p className="mt-2 text-3xl font-semibold tracking-tight text-zinc-950 dark:text-white">
                     {rec.primaryLabel}
@@ -269,11 +313,11 @@ export default function Home() {
               </div>
             </>
           )}
-      </section>
+        </section>
 
-      <Separator />
+        <Separator />
 
-      <section className="flex flex-col gap-5">
+        <section className="flex flex-col gap-5">
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">Log session</h1>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
@@ -350,63 +394,8 @@ export default function Home() {
               {isSaving ? "Saving..." : "Save"}
             </Button>
         </div>
-      </section>
-
-      <Separator />
-
-      <section className="flex flex-col gap-5">
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">History</h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Last 14 days on this device, newest first.
-          </p>
-        </header>
-
-          {historyRows.length === 0 ? (
-            <p className="text-sm text-zinc-500">No sessions yet.</p>
-          ) : (
-            <ul className="divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
-              {historyRows.map((s) => {
-                const tennisEasy = s.type === "T" && classify(s) === "easy";
-                const label = labelForType(s.type, { tennisEasy });
-                const daysAgo = calendarDaysBetween(s.date, today);
-                const formattedDate = format(
-                  parse(s.date, "yyyy-MM-dd", new Date()),
-                  "EEEE, MMM d",
-                );
-                const relativeLabel =
-                  daysAgo === 0
-                    ? "Today"
-                    : daysAgo === 1
-                      ? "1 day ago"
-                      : `${daysAgo} days ago`;
-                const extra =
-                  s.type === "S" || s.type === "T"
-                    ? s.intensity
-                      ? ` · ${s.intensity}`
-                      : ""
-                    : "";
-                return (
-                  <li
-                    key={s.date}
-                    className="flex flex-col gap-0.5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <span className="font-medium text-zinc-950 dark:text-zinc-50">
-                      {formattedDate}
-                      <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">
-                        ({relativeLabel})
-                      </span>
-                    </span>
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {label}
-                      {extra}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-        )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   );
 }
