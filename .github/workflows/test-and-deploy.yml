@@ -1,0 +1,63 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run build
+        run: npm run build
+
+      - name: Trigger Coolify deploy
+        run: |
+          status=$(curl --silent --show-error \
+            --output /tmp/coolify-body.txt \
+            --dump-header /tmp/coolify-headers.txt \
+            --write-out "%{http_code}" \
+            "https://coolify.zanelab.dev/api/v1/deploy?uuid=$COOLIFY_APP_UUID" \
+            --header "Authorization: Bearer $COOLIFY_API_TOKEN" \
+            --header "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+            --header "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET")
+
+          echo "Coolify deploy status: $status"
+          echo "Response headers:"
+          grep -E '^(HTTP/|server:|location:|content-type:|cf-ray:)' /tmp/coolify-headers.txt || true
+          echo "Response body:"
+          cat /tmp/coolify-body.txt
+
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            exit 1
+          fi
+        env:
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
