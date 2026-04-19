@@ -1,46 +1,46 @@
 {
-  "name": "daily-gym",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "npm@11.6.2+sha512.ee22b335fcbc95662cdf3ab8a053daf045d9cf9c6df6040d28965abb707512b2c16fa6c5eec049d34c74f78f390cebd14f697919eadb97756564d4f9eccc4954",
-  "engines": {
-    "node": ">=20.19.0"
-  },
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "vitest run"
-  },
-  "dependencies": {
-    "@radix-ui/react-dropdown-menu": "^2.1.16",
-    "@radix-ui/react-label": "^2.1.8",
-    "@radix-ui/react-select": "^2.2.6",
-    "@radix-ui/react-separator": "^1.1.8",
-    "@radix-ui/react-slot": "^1.2.4",
-    "@tanstack/react-query": "^5.99.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
-    "lucide-react": "^1.8.0",
-    "next": "16.2.3",
-    "react": "19.2.4",
-    "react-day-picker": "^9.14.0",
-    "react-dom": "19.2.4",
-    "sonner": "^2.0.7",
-    "tailwind-merge": "^3.5.0",
-    "vaul": "^1.1.2"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.2",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "^19",
-    "eslint": "^9.39.1",
-    "eslint-config-next": "^16.2.3",
-    "tailwindcss": "^4",
-    "typescript": "6.0.2",
-    "vitest": "^4.1.4"
-  }
+	"name": "daily-gym",
+	"version": "0.1.0",
+	"private": true,
+	"packageManager": "npm@11.6.2+sha512.ee22b335fcbc95662cdf3ab8a053daf045d9cf9c6df6040d28965abb707512b2c16fa6c5eec049d34c74f78f390cebd14f697919eadb97756564d4f9eccc4954",
+	"engines": {
+		"node": ">=20.19.0"
+	},
+	"scripts": {
+		"dev": "next dev --port 3025",
+		"build": "next build",
+		"start": "next start",
+		"lint": "eslint",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@radix-ui/react-dropdown-menu": "^2.1.16",
+		"@radix-ui/react-label": "^2.1.8",
+		"@radix-ui/react-select": "^2.2.6",
+		"@radix-ui/react-separator": "^1.1.8",
+		"@radix-ui/react-slot": "^1.2.4",
+		"@tanstack/react-query": "^5.99.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"date-fns": "^4.1.0",
+		"lucide-react": "^1.8.0",
+		"next": "16.2.3",
+		"react": "19.2.4",
+		"react-day-picker": "^9.14.0",
+		"react-dom": "19.2.4",
+		"sonner": "^2.0.7",
+		"tailwind-merge": "^3.5.0",
+		"vaul": "^1.1.2"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "^4.2.2",
+		"@types/node": "25.6.0",
+		"@types/react": "19.2.14",
+		"@types/react-dom": "^19",
+		"eslint": "^9.39.1",
+		"eslint-config-next": "^16.2.3",
+		"tailwindcss": "^4",
+		"typescript": "6.0.2",
+		"vitest": "^4.1.4"
+	}
 }

@@ -3,7 +3,6 @@
 import { HistorySheet } from "@/components/history-sheet";
 import { SessionTypeOptionCardCompact } from "@/components/session-type-option-cards";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     DropdownMenu,
@@ -13,6 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import {
+  WorkoutTypeCalendar,
+} from "@/components/workout-type-calendar";
 import { WorkoutInfoSheet } from "@/components/workout-info-sheet";
 import { useSessions } from "@/hooks/use-sessions";
 import { buildHistory } from "@/lib/history";
@@ -27,45 +29,10 @@ import {
     subscribeStartingPreference,
 } from "@/lib/storage";
 import type { SessionType } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { format, parse } from "date-fns";
-import { Bike, Check, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar } from "lucide-react";
+import { Bike, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar } from "lucide-react";
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { DayButton, type DayButtonProps } from "react-day-picker";
 import { toast } from "sonner";
-
-function LoggedDayButton({ className, children, modifiers, ...props }: DayButtonProps) {
-  const isLogged = Boolean(modifiers.logged);
-  const isSelected = Boolean(modifiers.selected);
-
-  return (
-    <DayButton
-      className={cn(
-        className,
-        !isSelected &&
-          !isLogged &&
-          "hover:bg-zinc-100 dark:hover:bg-zinc-800",
-        isSelected &&
-          "bg-zinc-900 text-white hover:bg-zinc-900 hover:text-white focus:bg-zinc-900 focus:text-white active:bg-zinc-900 active:text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-100 dark:hover:text-zinc-900 dark:focus:bg-zinc-100 dark:focus:text-zinc-900 dark:active:bg-zinc-100 dark:active:text-zinc-900",
-        isLogged &&
-          !isSelected &&
-          "border border-emerald-200 bg-emerald-50 text-emerald-950 hover:bg-emerald-100 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-100 dark:hover:bg-emerald-950/60",
-      )}
-      modifiers={modifiers}
-      {...props}
-    >
-      {children}
-      {isLogged ? (
-        <Check
-          className={cn(
-            "pointer-events-none absolute right-1 top-1 size-3",
-            isSelected ? "text-white dark:text-zinc-900" : "text-emerald-600 dark:text-emerald-300",
-          )}
-        />
-      ) : null}
-    </DayButton>
-  );
-}
 
 const SESSION_TYPE_OPTIONS = [
   {
@@ -136,7 +103,10 @@ export default function Home() {
     const pruned = pruneSessionsForFreeTier(sessions, today);
     return [...pruned].sort((a, b) => (a.date < b.date ? 1 : -1));
   }, [sessions, today]);
-  const loggedDates = useMemo(() => new Set(sessions.map((session) => session.date)), [sessions]);
+  const sessionsByDate = useMemo(
+    () => new Map(sessions.map((session) => [session.date, session])),
+    [sessions],
+  );
 
   const needsIntensity = logType === "S";
   const selectedLogDate = useMemo(
@@ -322,9 +292,12 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <Label>Date</Label>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Logged days stay color-coded by workout type.
+            </p>
             <div className="flex justify-center">
-              <Calendar
-                mode="single"
+              <WorkoutTypeCalendar
+                variant="tile"
                 month={visibleMonth}
                 onMonthChange={setVisibleMonth}
                 selected={selectedLogDate}
@@ -333,13 +306,7 @@ export default function Home() {
                   setLogDate(format(date, "yyyy-MM-dd"));
                   setVisibleMonth(date);
                 }}
-                modifiers={{
-                  logged: (date) => loggedDates.has(format(date, "yyyy-MM-dd")),
-                }}
-                components={{
-                  DayButton: LoggedDayButton,
-                }}
-                className="w-fit"
+                sessionsByDate={sessionsByDate}
               />
             </div>
           </div>
