@@ -20,9 +20,9 @@
 
 ## Source Of Truth
 
-- Product behavior is defined by `docs/WORKOUT_RECOMMENDER_PRD.md`.
-- Resolved product decisions that affect implementation live in `docs/plan/DECISIONS.md`.
-- If docs and code disagree, trust the executable behavior in `src/lib/*` and `package.json`.
+- Product behavior is defined by executable code in `src/lib/*` and tests in `src/lib/*.test.ts`.
+- Archived PRD and roadmap docs live under `docs/archive/` (likely stale — see `docs/archive/README.md`).
+- If archived docs and code disagree, trust `src/lib/*`, tests, and `package.json`.
 
 ## Core Logic
 
