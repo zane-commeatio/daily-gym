@@ -1,5 +1,7 @@
 # Implementation plan — PRD to launched Pro
 
+> **Archived** — roadmap and links may not match the current app. See [`../README.md`](../README.md).
+
 This folder turns [`WORKOUT_RECOMMENDER_PRD.md`](../WORKOUT_RECOMMENDER_PRD.md) into a **phased roadmap** from an empty repo through **MVP**, **beta quality**, **Pro** (extended retention, Apple Health, account + sync), **commercial/compliance**, and **production launch** on your **VPS (Coolify)**.
 
 **Authoritative choices:** [`DECISIONS.md`](DECISIONS.md)  
