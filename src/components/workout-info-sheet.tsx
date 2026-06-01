@@ -54,6 +54,14 @@ type WorkoutInfoSheetProps = {
   trigger?: ReactNode;
 };
 
+/**
+ * Drawer explaining workout types and recommendation rules.
+ * @param props Component props.
+ * @param props.open Whether the drawer is open (controlled).
+ * @param props.onOpenChange Callback when the drawer opens/closes.
+ * @param props.trigger Optional element to open the drawer.
+ * @returns The drawer JSX.
+ */
 export function WorkoutInfoSheet({
   open,
   onOpenChange,

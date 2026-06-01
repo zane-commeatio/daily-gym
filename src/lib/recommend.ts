@@ -75,8 +75,17 @@ function buildLabels(
 }
 
 /**
+ * Recommend today's workout type based on recent history and fatigue.
+ *
  * PRD §6 — rules applied in order; blocking/narrowing is cumulative except rule 1 and 5
  * which replace or heavily constrain the allowed set.
+ * @param history Sessions from the last 7 days (newest first, at most one per day).
+ * @param todayIso Today's date string (YYYY-MM-DD).
+ * @param fatigueToday The user's fatigue level today.
+ * @param options Optional parameters.
+ * @param options.startingPreference User's preferred starting bias when history is empty.
+ * @param options.isEmptyHistory Whether the user has no logged sessions at all.
+ * @returns The recommendation result with allowed types, ranking, and labels.
  */
 export function recommend(
   history: Session[],

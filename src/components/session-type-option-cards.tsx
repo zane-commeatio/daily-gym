@@ -39,6 +39,17 @@ function OptionButton({
   );
 }
 
+/**
+ * Compact card button for selecting a session type in the log form.
+ * @param props Component props.
+ * @param props.type The session type value.
+ * @param props.title Display title.
+ * @param props.info Description text.
+ * @param props.icon Icon element.
+ * @param props.selected Whether this option is currently selected.
+ * @param props.onSelect Callback when this option is selected.
+ * @returns The card JSX.
+ */
 export function SessionTypeOptionCardCompact({
   type,
   title,

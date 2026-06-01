@@ -57,3 +57,11 @@
 - There is no `tailwind.config.*`; theme tokens live in `src/app/globals.css`.
 - UI primitives in `src/components/ui/` follow the `components.json` aliases (`@/components`, `@/components/ui`, `@/lib`, `@/hooks`).
 - Use toast feedback patterns consistently with `sonner`; the app already has a global toaster in layout.
+
+## Documentation Maintenance
+
+- **JSDoc**: Every exported function must have `@param` and `@returns` tags (enforced by `eslint-plugin-jsdoc` at `warn` level). Complex components over ~100 lines should have section-level JSDoc comments.
+- **CHANGELOG**: Every PR that changes behaviour must add an entry under `## [Unreleased]` in `CHANGELOG.md` using [keepachangelog](https://keepachangelog.com) format. Validated in CI.
+- **ADRs**: Significant decisions (architecture, data model, dependency choices) get a numbered ADR in `docs/adr/`. Update status (`accepted` / `superseded`) when superseded.
+- **ROADMAP.md**: Keep the root `ROADMAP.md` current — update phase status when work starts or completes.
+- **Staleness check**: CI runs `.github/scripts/check-doc-staleness.sh` which warns when source files are newer than their associated docs. If you see a warning, either update the doc or, if it remains accurate, acknowledge in the PR description. Never ignore silently.

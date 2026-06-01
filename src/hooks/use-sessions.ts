@@ -14,6 +14,15 @@ import type { Session } from "@/lib/types";
 
 export const SESSIONS_QUERY_KEY = ["sessions"] as const;
 
+/**
+ * Read/write sessions from localStorage via TanStack Query.
+ *
+ * Reads are cached by query key; the mutation writes directly to localStorage
+ * (loadSessions inside mutateFn) then updates the cache optimistically via
+ * setQueryData. This avoids stale-closure issues with the query cache when
+ * multiple tabs are open — the mutation always reads fresh from localStorage.
+ * @returns The sessions state: sessions array, loading flag, save function, and saving flag.
+ */
 export function useSessions() {
   const queryClient = useQueryClient();
 

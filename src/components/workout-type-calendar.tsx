@@ -49,6 +49,11 @@ function useWorkoutSession(day: Date): Session | undefined {
   return context.sessionsByDate.get(format(day, "yyyy-MM-dd"));
 }
 
+/**
+ * Short uppercase label for a session type (STR / STR+ / CARD / HIIT / REST).
+ * @param session The session to label.
+ * @returns The uppercase label string.
+ */
 function typeLabel(session: Session): string {
   if (session.type === "S") {
     return session.intensity === "hard" ? "STR+" : "STR";
@@ -59,6 +64,11 @@ function typeLabel(session: Session): string {
   return "REST";
 }
 
+/**
+ * Human-readable title for a session type.
+ * @param session The session to title.
+ * @returns The title string (e.g. "Strength hard", "Rest").
+ */
 function typeTitle(session: Session): string {
   if (session.type === "S") {
     return session.intensity === "hard" ? "Strength hard" : "Strength easy";
@@ -69,6 +79,12 @@ function typeTitle(session: Session): string {
   return "Rest";
 }
 
+/**
+ * Tailwind colour classes for each session type.
+ * Returns tint (background), strong (solid background), text, dot, and border tokens.
+ * @param session The session to colour.
+ * @returns An object of CSS class strings per visual role.
+ */
 function typeClasses(session: Session): {
   tint: string;
   strong: string;
@@ -234,6 +250,26 @@ function componentForVariant(variant: WorkoutCalendarVariant) {
   return WorkoutDayButtonTile;
 }
 
+/**
+ * Calendar that colour-codes each day by the logged workout type.
+ * Supports five visual variants: band, badge, split, dot, tile.
+ *
+ * Each variant renders differently:
+ * - band: coloured label strip at the bottom of the day cell
+ * - badge: floating chip overlay on the day number
+ * - split: two-part tile with coloured bottom half
+ * - dot: small dot + label beneath the day number
+ * - tile: full-cell background colour with label
+ * @param props Component props.
+ * @param props.className Additional CSS classes.
+ * @param props.month The currently displayed month.
+ * @param props.onMonthChange Called when the displayed month changes.
+ * @param props.selected The currently selected date.
+ * @param props.onSelect Called when a date is selected.
+ * @param props.sessionsByDate Sessions keyed by YYYY-MM-DD string.
+ * @param props.variant Visual variant to render.
+ * @returns The calendar JSX.
+ */
 export function WorkoutTypeCalendar({
   className,
   month,

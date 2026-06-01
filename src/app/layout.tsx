@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   description: "A minimal app that tells you what workout to do today based on simple rules and recent history.",
 };
 
+/**
+ * Root layout wrapping the app with QueryProvider and the global sonner toaster.
+ * @param props Component props.
+ * @param props.children Child components to render within the layout.
+ * @returns The root layout JSX.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

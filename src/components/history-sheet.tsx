@@ -25,6 +25,16 @@ type HistorySheetProps = {
   trigger?: ReactNode;
 };
 
+/**
+ * Drawer showing the last 14 days of sessions, newest first.
+ * @param props Component props.
+ * @param props.historyRows Sessions to display, newest first.
+ * @param props.todayIso Today's date string for relative labels.
+ * @param props.open Whether the drawer is open (controlled).
+ * @param props.onOpenChange Callback when the drawer opens/closes.
+ * @param props.trigger Optional element to open the drawer.
+ * @returns The drawer JSX.
+ */
 export function HistorySheet({
   historyRows,
   todayIso,

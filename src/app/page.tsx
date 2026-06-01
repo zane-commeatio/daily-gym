@@ -34,6 +34,7 @@ import { Bike, CircleHelp, Dumbbell, Flame, History, Menu, MoonStar } from "luci
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
+/** Available session types shown in the Log session form. */
 const SESSION_TYPE_OPTIONS = [
   {
     type: "S" as const,
@@ -61,6 +62,10 @@ const SESSION_TYPE_OPTIONS = [
   },
 ];
 
+/**
+ * Main page: Today recommendation, fatigue selector, log session form, and history.
+ * @returns The home page JSX.
+ */
 export default function Home() {
   const { sessions, saveSession, isSaving } = useSessions();
   const [fatigue, setFatigue] = useState<"low" | "medium" | "high" | "unset">(
@@ -150,6 +155,7 @@ export default function Home() {
         onOpenChange={setIsHistoryOpen}
       />
       <main className="relative left-1/2 flex w-[min(calc(100vw-2rem),42rem)] flex-1 -translate-x-1/2 flex-col gap-8">
+        {/* ── Today recommendation section ── */}
         <section className="flex flex-col gap-6">
           <header>
           <div className="flex items-start justify-between gap-3">
@@ -281,6 +287,7 @@ export default function Home() {
 
         <Separator />
 
+        {/* ── Log session section ── */}
         <section className="flex flex-col gap-5">
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">Log session</h1>
